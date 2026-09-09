@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>If Statements and Logical Operators – Year 7 Pre-learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+body{margin:0;padding:0;background:#f5f5f5;font-family:'Lato',sans-serif;font-size:14pt;color:#333333;line-height:1.65;}
+
+/* MCQ (pure JS, no radio) */
+.opt{display:block;font-family:'Lato',sans-serif;font-size:14pt;padding:11px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#ffffff;color:#333333;cursor:pointer;margin-bottom:10px;line-height:1.4;user-select:none;-webkit-user-select:none;transition:background 0.12s,border-color 0.12s;}
+.opt:hover{background:#e3f2fd;border-color:#007BA6;}
+.opt.selected{background:#e3f2fd;border-color:#007BA6;font-weight:700;}
+.opt.correct{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;font-weight:700;pointer-events:none;cursor:default;}
+.opt.wrong{background:#ffebee!important;border-color:#C62828!important;color:#7f0000!important;pointer-events:none;cursor:default;}
+.opt.reveal{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;font-weight:700;pointer-events:none;cursor:default;}
+.opt.locked{pointer-events:none;cursor:default;}
+
+/* word chips */
+.wopt{display:inline-block;font-family:'Courier New',Courier,monospace;font-size:13pt;font-weight:700;padding:8px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#ffffff;color:#333333;cursor:pointer;margin:4px 6px 4px 0;line-height:1.4;user-select:none;-webkit-user-select:none;transition:background 0.12s,border-color 0.12s;}
+.wopt:hover{background:#e3f2fd;border-color:#007BA6;}
+.wopt.selected{background:#e3f2fd;border-color:#007BA6;color:#007BA6;}
+.wopt.correct{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;pointer-events:none;}
+.wopt.wrong{background:#ffebee!important;border-color:#C62828!important;color:#7f0000!important;pointer-events:none;}
+.wopt.reveal{background:#e8f5e9!important;border-color:#388e3c!important;color:#1b5e20!important;pointer-events:none;}
+.wopt.locked{pointer-events:none;}
+
+/* feedback */
+.fb{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:14px;}
+.fb-ok{background:#e8f5e9;color:#1b5e20;border:1px solid #81c784;}
+.fb-bad{background:#ffebee;color:#7f0000;border:1px solid #ef9a9a;}
+
+/* true / false */
+.tf-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;padding:12px 16px;background:#fff;border:1px solid #d0d0d0;border-radius:6px;}
+.tf-stmt{flex:1;font-family:'Lato',sans-serif;font-size:14pt;color:#333;line-height:1.5;}
+.tf-btns{display:flex;gap:8px;flex-shrink:0;margin-top:2px;}
+.tf-btn{font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:7px 18px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;color:#333;cursor:pointer;}
+.tf-btn:hover{background:#e3f2fd;border-color:#007BA6;}
+.tf-btn.ok{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;pointer-events:none;}
+.tf-btn.bad{background:#ffebee;border-color:#C62828;color:#7f0000;pointer-events:none;}
+.tf-btn.show{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;pointer-events:none;}
+.tf-row.done .tf-btn{pointer-events:none;}
+
+/* match */
+.match-row{display:grid;grid-template-columns:210px 1fr;gap:8px;margin-bottom:8px;align-items:center;}
+.match-term{font-family:'Lato',sans-serif;font-size:13pt;font-weight:700;padding:9px 12px;background:#1e1e2e;border-radius:6px;color:#cdd6f4;text-align:center;line-height:1.4;}
+.match-sel{font-family:'Lato',sans-serif;font-size:13pt;padding:9px 12px;border:2px solid #d0d0d0;border-radius:6px;background:#fff;color:#333;width:100%;cursor:pointer;}
+.match-sel:focus{outline:none;border-color:#007BA6;}
+.match-row.ok .match-sel{background:#e8f5e9;border-color:#388e3c;color:#1b5e20;}
+.match-row.bad .match-sel{background:#ffebee;border-color:#C62828;color:#7f0000;}
+.match-btn{display:inline-block;font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:8px 22px;border:2px solid #007BA6;border-radius:6px;background:#007BA6;color:#fff;cursor:pointer;margin-top:12px;}
+.match-btn:hover{background:#005f80;}
+.match-btn:disabled{background:#b3d4e8;border-color:#b3d4e8;cursor:default;}
+.match-result{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:12px;}
+
+/* drag & drop */
+.drag-bank{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:#f0f8ff;border:2px dashed #b3d4e8;border-radius:6px;min-height:52px;margin-bottom:12px;}
+.drag-chip{font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:7px 16px;border:2px solid #007BA6;border-radius:6px;background:#e3f2fd;color:#007BA6;cursor:grab;white-space:nowrap;user-select:none;-webkit-user-select:none;}
+.drag-chip:active{cursor:grabbing;opacity:0.7;}
+.drag-chip.locked{cursor:default;pointer-events:none;opacity:0.75;}
+.drop-zone{display:inline-flex;align-items:center;justify-content:center;min-width:110px;padding:4px 8px;border-bottom:3px solid #007BA6;background:#fafafa;font-family:'Lato',sans-serif;font-size:12pt;color:#C62828;font-weight:700;vertical-align:middle;text-align:center;min-height:28px;}
+.drop-zone.drag-over{background:#e3f2fd;border-bottom-color:#C62828;}
+.sort-zone{display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:6px;min-height:76px;}
+.check-btn{display:inline-block;font-family:'Lato',sans-serif;font-size:12pt;font-weight:700;padding:8px 22px;border:2px solid #007BA6;border-radius:6px;background:#007BA6;color:#fff;cursor:pointer;margin-top:12px;}
+.check-btn:hover{background:#005f80;}
+.check-btn:disabled{background:#b3d4e8;border-color:#b3d4e8;cursor:default;}
+.drag-result{display:none;font-family:'Lato',sans-serif;font-size:14pt;line-height:1.65;padding:14px 18px;border-radius:6px;margin-top:12px;}
+
+code{font-family:'Courier New',monospace;background:#f0f0f0;padding:1px 6px;border-radius:3px;font-size:13pt;}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#f5f5f5;">
+<div style="max-width:900px;margin:0 auto;padding:0 0 60px;">
+
+<!-- HEADER -->
+<div style="background:#007BA6;padding:32px 40px 28px;">
+  <div style="font-size:24pt;font-weight:700;color:#ffffff;margin:0 0 6px;">If Statements and Logical Operators</div>
+  <div style="font-size:14pt;color:rgba(255,255,255,0.88);">Pre-learning &nbsp;|&nbsp; Year 7 Computer Science</div>
+  <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;">
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 15 minutes</span>
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 4 sections</span>
+    <span style="background:rgba(255,255,255,0.2);color:#fff;font-size:11pt;font-weight:700;padding:4px 14px;border-radius:20px;">&#9679; 10 interactive activities</span>
+  </div>
+</div>
+
+<!-- CONTENTS -->
+<div style="background:#ffffff;border-bottom:1px solid #d0d0d0;padding:20px 40px;">
+  <div style="font-size:12pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;">Contents</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;">
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>What is an IF Statement?</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>IF … ELSE Statements</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>Comparison Operators</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>Logical Operators: AND, OR, NOT</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12pt;"><div style="min-width:22px;height:22px;border-radius:50%;background:#007BA6;color:#fff;font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&#10003;</div>Summary</div>
+  </div>
+</div>
+
+<div style="padding:40px 40px 0;">
+
+<!-- ═══════════════════════════════════════
+     SECTION 1 — WHAT IS AN IF STATEMENT?
+══════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">What is an IF Statement?</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~3 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">An <strong>IF statement</strong> lets an algorithm make a decision. It checks a condition — something that is either true or false — and runs different steps depending on the answer. This is called <strong>selection</strong>.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div style="background:#1e1e2e;border-radius:8px;padding:16px 20px;">
+        <div style="font-size:11pt;font-weight:700;color:#6c7086;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Structured English</div>
+        <pre style="margin:0;font-family:'Courier New',monospace;font-size:12.5pt;line-height:1.9;color:#cdd6f4;white-space:pre-wrap;"><span style="color:#f38ba8;">IF</span> score <span style="color:#fab387;">&gt;= 50</span> <span style="color:#f38ba8;">THEN</span>
+    Output <span style="color:#a6e3a1;">"Well done, you passed!"</span>
+<span style="color:#f38ba8;">ENDIF</span></pre>
+      </div>
+      <div style="background:#f5f5f5;border:1px solid #d0d0d0;border-radius:8px;padding:16px 20px;">
+        <div style="font-size:11pt;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">What each part does</div>
+        <ul style="margin:0;padding-left:1.2em;font-size:13pt;line-height:2.0;color:#333;">
+          <li><code>IF</code> — starts the decision block</li>
+          <li><code>score &gt;= 50</code> — the <strong>condition</strong> being tested</li>
+          <li><code>THEN</code> — what to do if the condition is <em>true</em></li>
+          <li><code>ENDIF</code> — closes the IF block</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Key point:</strong> The steps inside the IF block (between THEN and ENDIF) <em>only run</em> if the condition is true. If the condition is false, the algorithm skips those steps entirely.
+    </div>
+  </div>
+
+  <!-- Activity 1 — Match keyword to purpose -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9654; Activity 1 — Match the keyword to its purpose</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Use the dropdowns to match each keyword to what it does in an IF statement.</div>
+    <div id="match1">
+      <div class="match-row">
+        <div class="match-term">IF</div>
+        <select class="match-sel" data-ans="start"><option value="">— choose —</option><option value="start">Starts the decision block</option><option value="cond">The condition being tested</option><option value="run">Runs steps when condition is true</option><option value="end">Closes the IF block</option></select>
+      </div>
+      <div class="match-row">
+        <div class="match-term">THEN</div>
+        <select class="match-sel" data-ans="run"><option value="">— choose —</option><option value="start">Starts the decision block</option><option value="cond">The condition being tested</option><option value="run">Runs steps when condition is true</option><option value="end">Closes the IF block</option></select>
+      </div>
+      <div class="match-row">
+        <div class="match-term">ENDIF</div>
+        <select class="match-sel" data-ans="end"><option value="">— choose —</option><option value="start">Starts the decision block</option><option value="cond">The condition being tested</option><option value="run">Runs steps when condition is true</option><option value="end">Closes the IF block</option></select>
+      </div>
+      <div class="match-row">
+        <div class="match-term">score &gt;= 50</div>
+        <select class="match-sel" data-ans="cond"><option value="">— choose —</option><option value="start">Starts the decision block</option><option value="cond">The condition being tested</option><option value="run">Runs steps when condition is true</option><option value="end">Closes the IF block</option></select>
+      </div>
+    </div>
+    <button class="match-btn" id="match1-btn" onclick="checkMatch1()">&#10003; Check my answers</button>
+    <div class="match-result" id="match1-res"></div>
+  </div>
+
+  <!-- Activity 2 — MCQ predict output IF only -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 2 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:10px;line-height:1.5;">What is the output of this algorithm when <strong>score = 40</strong>?</div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:12px 18px;margin-bottom:14px;font-family:'Courier New',monospace;font-size:12.5pt;line-height:1.9;color:#cdd6f4;white-space:pre;"><span style="color:#f38ba8;">IF</span> score <span style="color:#fab387;">&gt;= 50</span> <span style="color:#f38ba8;">THEN</span>
+    Output <span style="color:#a6e3a1;">"Well done, you passed!"</span>
+<span style="color:#f38ba8;">ENDIF</span>
+Output <span style="color:#a6e3a1;">"Algorithm complete."</span></div>
+    <div id="opts2">
+      <div class="opt" onclick="pickOpt(2,'a',this)">a) "Well done, you passed!" only</div>
+      <div class="opt" onclick="pickOpt(2,'b',this)">b) "Well done, you passed!" then "Algorithm complete."</div>
+      <div class="opt" onclick="pickOpt(2,'c',this)">c) "Algorithm complete." only</div>
+      <div class="opt" onclick="pickOpt(2,'d',this)">d) Nothing is output</div>
+    </div>
+    <div class="fb" id="fb2"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 2 — IF … ELSE STATEMENTS
+══════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">IF … ELSE Statements</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~4 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">Adding an <code>ELSE</code> branch means the algorithm always does <em>something</em> — one path if the condition is true, and a different path if the condition is false.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div style="background:#1e1e2e;border-radius:8px;padding:16px 20px;">
+        <div style="font-size:11pt;font-weight:700;color:#6c7086;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Structured English</div>
+        <pre style="margin:0;font-family:'Courier New',monospace;font-size:12.5pt;line-height:1.9;color:#cdd6f4;white-space:pre-wrap;"><span style="color:#f38ba8;">IF</span> temperature <span style="color:#fab387;">&lt; 10</span> <span style="color:#f38ba8;">THEN</span>
+    Output <span style="color:#a6e3a1;">"Wear a coat"</span>
+<span style="color:#f38ba8;">ELSE</span>
+    Output <span style="color:#a6e3a1;">"No coat needed"</span>
+<span style="color:#f38ba8;">ENDIF</span></pre>
+      </div>
+      <div style="background:#f5f5f5;border:1px solid #d0d0d0;border-radius:8px;padding:16px 20px;">
+        <div style="font-size:12pt;font-weight:700;color:#007BA6;margin-bottom:10px;">How it works:</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13pt;">
+          <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;border-left:4px solid #388e3c;"><strong style="color:#1b5e20;">Condition TRUE</strong> (temperature &lt; 10):<br>Outputs "Wear a coat"</div>
+          <div style="background:#ffebee;border-radius:6px;padding:8px 12px;border-left:4px solid #C62828;"><strong style="color:#C62828;">Condition FALSE</strong> (temperature &ge; 10):<br>Outputs "No coat needed"</div>
+          <div style="background:#e3f2fd;border-radius:6px;padding:8px 12px;border-left:4px solid #007BA6;"><strong>Exactly one</strong> branch always runs — never both, never neither.</div>
+        </div>
+      </div>
+    </div>
+    <div style="border-left:4px solid #C62828;background:#fff8f8;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#C62828;">Common mistake:</strong> Forgetting <code>ENDIF</code>. Without it, the algorithm is incomplete — the computer does not know where the IF block ends.
+    </div>
+  </div>
+
+  <!-- Activity 3 — TF about IF ELSE -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 3 — True or False?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Click True or False for each statement.</div>
+    <div class="tf-row" id="tf1">
+      <div class="tf-stmt">In an IF…ELSE statement, both the IF branch and the ELSE branch can run at the same time.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(1,true,false)">True</button><button class="tf-btn" onclick="doTF(1,false,false)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf2">
+      <div class="tf-stmt">ENDIF is required to mark where an IF statement finishes.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(2,true,true)">True</button><button class="tf-btn" onclick="doTF(2,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf3">
+      <div class="tf-stmt">An IF statement without an ELSE will do nothing if the condition is false.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(3,true,true)">True</button><button class="tf-btn" onclick="doTF(3,false,true)">False</button></div>
+    </div>
+    <div class="tf-row" id="tf4">
+      <div class="tf-stmt">The ELSE branch runs when the IF condition is true.</div>
+      <div class="tf-btns"><button class="tf-btn" onclick="doTF(4,true,false)">True</button><button class="tf-btn" onclick="doTF(4,false,false)">False</button></div>
+    </div>
+  </div>
+
+  <!-- Activity 4 — drag to complete IF ELSE -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9707; Activity 4 — Complete the IF statement</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">The algorithm below checks if a student's score is a pass (50 or above). Three keywords are missing. Drag the correct keyword into each gap.</div>
+    <div class="drag-bank" id="bank4">
+      <div class="drag-chip" draggable="true">IF</div>
+      <div class="drag-chip" draggable="true">THEN</div>
+      <div class="drag-chip" draggable="true">ELSE</div>
+      <div class="drag-chip" draggable="true">ENDIF</div>
+      <div class="drag-chip" draggable="true">WHILE</div>
+      <div class="drag-chip" draggable="true">FOR</div>
+    </div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:16px 20px;font-family:'Courier New',monospace;font-size:12.5pt;line-height:2.6;color:#cdd6f4;overflow-x:auto;">
+      <span id="dz4a" class="drop-zone" style="min-width:80px;font-size:12pt;">_____</span> score &gt;= 50 <span id="dz4b" class="drop-zone" style="min-width:80px;font-size:12pt;">_____</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;Output "Pass"<br>
+      <span id="dz4c" class="drop-zone" style="min-width:80px;font-size:12pt;">_____</span><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;Output "Fail"<br>
+      <span style="color:#f38ba8;">ENDIF</span>
+    </div>
+    <button class="check-btn" id="act4-btn" onclick="checkAct4()">&#10003; Check my keywords</button>
+    <div class="drag-result" id="act4-res"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 3 — COMPARISON OPERATORS
+══════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Comparison Operators</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~4 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;">A condition in an IF statement uses a <strong>comparison operator</strong> to compare two values. The result is always either <strong>true</strong> or <strong>false</strong>.</p>
+    <div style="overflow-x:auto;">
+      <table style="border-collapse:collapse;width:100%;font-size:13pt;">
+        <tr style="background:#007BA6;color:#fff;">
+          <th style="padding:10px 16px;text-align:left;border:1px solid #005f80;">Operator</th>
+          <th style="padding:10px 16px;text-align:left;border:1px solid #005f80;">Meaning</th>
+          <th style="padding:10px 16px;text-align:left;border:1px solid #005f80;">Example (age = 16)</th>
+          <th style="padding:10px 16px;text-align:center;border:1px solid #005f80;">Result</th>
+        </tr>
+        <tr style="background:#fff;">
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;font-size:14pt;font-weight:700;">=</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;">Equal to</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;">age = 16</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;text-align:center;background:#e8f5e9;color:#1b5e20;font-weight:700;">TRUE</td>
+        </tr>
+        <tr style="background:#f0f8ff;">
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;font-size:14pt;font-weight:700;">&lt;&gt;</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;">Not equal to</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;">age &lt;&gt; 18</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;text-align:center;background:#e8f5e9;color:#1b5e20;font-weight:700;">TRUE</td>
+        </tr>
+        <tr style="background:#fff;">
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;font-size:14pt;font-weight:700;">&lt;</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;">Less than</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;">age &lt; 18</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;text-align:center;background:#e8f5e9;color:#1b5e20;font-weight:700;">TRUE</td>
+        </tr>
+        <tr style="background:#f0f8ff;">
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;font-size:14pt;font-weight:700;">&gt;</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;">Greater than</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;">age &gt; 16</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;text-align:center;background:#ffebee;color:#C62828;font-weight:700;">FALSE</td>
+        </tr>
+        <tr style="background:#fff;">
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;font-size:14pt;font-weight:700;">&lt;=</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;">Less than or equal to</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;">age &lt;= 16</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;text-align:center;background:#e8f5e9;color:#1b5e20;font-weight:700;">TRUE</td>
+        </tr>
+        <tr style="background:#f0f8ff;">
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;font-size:14pt;font-weight:700;">&gt;=</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;">Greater than or equal to</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;font-family:'Courier New',monospace;">age &gt;= 16</td>
+          <td style="padding:9px 16px;border:1px solid #d0d0d0;text-align:center;background:#e8f5e9;color:#1b5e20;font-weight:700;">TRUE</td>
+        </tr>
+      </table>
+    </div>
+    <div style="border-left:4px solid #e65100;background:#fff3e0;padding:12px 16px;border-radius:0 6px 6px 0;margin-top:14px;">
+      <strong style="color:#e65100;">Watch out:</strong> <code>&gt;</code> means <em>strictly</em> greater than — it does <em>not</em> include equal to. If you want to include the boundary value (e.g. a score of exactly 50 counts as a pass), you must use <code>&gt;=</code>.
+    </div>
+  </div>
+
+  <!-- Activity 5 — Match operator to meaning -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9654; Activity 5 — Match the operator to its meaning</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;">Use the dropdowns to match each operator to its correct meaning.</div>
+    <div id="match2">
+      <div class="match-row">
+        <div class="match-term" style="font-family:'Courier New',monospace;font-size:16pt;">&lt;&gt;</div>
+        <select class="match-sel" data-ans="ne"><option value="">— choose —</option><option value="eq">Equal to</option><option value="ne">Not equal to</option><option value="lt">Less than</option><option value="lte">Less than or equal to</option><option value="gte">Greater than or equal to</option></select>
+      </div>
+      <div class="match-row">
+        <div class="match-term" style="font-family:'Courier New',monospace;font-size:16pt;">&gt;=</div>
+        <select class="match-sel" data-ans="gte"><option value="">— choose —</option><option value="eq">Equal to</option><option value="ne">Not equal to</option><option value="lt">Less than</option><option value="lte">Less than or equal to</option><option value="gte">Greater than or equal to</option></select>
+      </div>
+      <div class="match-row">
+        <div class="match-term" style="font-family:'Courier New',monospace;font-size:16pt;">&lt;</div>
+        <select class="match-sel" data-ans="lt"><option value="">— choose —</option><option value="eq">Equal to</option><option value="ne">Not equal to</option><option value="lt">Less than</option><option value="lte">Less than or equal to</option><option value="gte">Greater than or equal to</option></select>
+      </div>
+      <div class="match-row">
+        <div class="match-term" style="font-family:'Courier New',monospace;font-size:16pt;">&lt;=</div>
+        <select class="match-sel" data-ans="lte"><option value="">— choose —</option><option value="eq">Equal to</option><option value="ne">Not equal to</option><option value="lt">Less than</option><option value="lte">Less than or equal to</option><option value="gte">Greater than or equal to</option></select>
+      </div>
+    </div>
+    <button class="match-btn" id="match2-btn" onclick="checkMatch2()">&#10003; Check my answers</button>
+    <div class="match-result" id="match2-res"></div>
+  </div>
+
+  <!-- Activity 6 — MCQ: which operator? -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 6 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">A theme park ride requires riders to be <strong>at least 140 cm tall</strong>. Which condition correctly enforces this rule in an IF statement?</div>
+    <div id="opts6">
+      <div class="opt" onclick="pickOpt(6,'a',this)">a) <code>IF height &gt; 140 THEN</code> — allow the rider</div>
+      <div class="opt" onclick="pickOpt(6,'b',this)">b) <code>IF height &gt;= 140 THEN</code> — allow the rider</div>
+      <div class="opt" onclick="pickOpt(6,'c',this)">c) <code>IF height = 140 THEN</code> — allow the rider</div>
+      <div class="opt" onclick="pickOpt(6,'d',this)">d) <code>IF height &lt; 140 THEN</code> — allow the rider</div>
+    </div>
+    <div class="fb" id="fb6"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SECTION 4 — LOGICAL OPERATORS
+══════════════════════════════════════════ -->
+<div style="margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid #d0d0d0;">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid #007BA6;">
+    <div style="min-width:36px;height:36px;border-radius:50%;background:#007BA6;color:#fff;font-size:14pt;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+    <div style="font-size:18pt;font-weight:700;color:#007BA6;">Logical Operators: AND, OR, NOT</div>
+    <div style="margin-left:auto;font-size:10pt;font-weight:700;color:#007BA6;background:#e3f2fd;padding:4px 12px;border-radius:20px;white-space:nowrap;border:1px solid #b3d4e8;flex-shrink:0;">&#9679; ~4 minutes</div>
+  </div>
+
+  <div style="background:#fff;border:1px solid #d0d0d0;border-radius:6px;padding:20px 24px;margin-bottom:18px;">
+    <p style="margin:0 0 14px;"><strong>Logical operators</strong> let you combine or change conditions inside an IF statement, so you can test more than one thing at once.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div style="background:#e3f2fd;border-radius:8px;padding:16px;border-top:4px solid #007BA6;">
+        <div style="font-family:'Courier New',monospace;font-size:18pt;font-weight:700;color:#007BA6;margin-bottom:8px;">AND</div>
+        <p style="margin:0 0 10px;font-size:13pt;">Both conditions must be <strong>true</strong> for the overall condition to be true.</p>
+        <div style="background:#1e1e2e;border-radius:4px;padding:8px 12px;font-family:'Courier New',monospace;font-size:11pt;color:#cdd6f4;line-height:1.8;">IF age &gt;= 12<br>&nbsp;&nbsp;AND age &lt;= 17<br>THEN<br>&nbsp;&nbsp;Output "Teen"<br>ENDIF</div>
+        <div style="margin-top:8px;font-size:12pt;color:#007BA6;font-style:italic;">True only if age is 12, 13, 14, 15, 16, or 17.</div>
+      </div>
+      <div style="background:#e8f5e9;border-radius:8px;padding:16px;border-top:4px solid #388e3c;">
+        <div style="font-family:'Courier New',monospace;font-size:18pt;font-weight:700;color:#388e3c;margin-bottom:8px;">OR</div>
+        <p style="margin:0 0 10px;font-size:13pt;">At least one condition must be <strong>true</strong> for the overall condition to be true.</p>
+        <div style="background:#1e1e2e;border-radius:4px;padding:8px 12px;font-family:'Courier New',monospace;font-size:11pt;color:#cdd6f4;line-height:1.8;">IF day = "Sat"<br>&nbsp;&nbsp;OR day = "Sun"<br>THEN<br>&nbsp;&nbsp;Output "Weekend"<br>ENDIF</div>
+        <div style="margin-top:8px;font-size:12pt;color:#388e3c;font-style:italic;">True if it is Saturday or Sunday (or both).</div>
+      </div>
+      <div style="background:#fff3e0;border-radius:8px;padding:16px;border-top:4px solid #e65100;">
+        <div style="font-family:'Courier New',monospace;font-size:18pt;font-weight:700;color:#e65100;margin-bottom:8px;">NOT</div>
+        <p style="margin:0 0 10px;font-size:13pt;"><strong>Reverses</strong> the result of a condition — true becomes false, false becomes true.</p>
+        <div style="background:#1e1e2e;border-radius:4px;padding:8px 12px;font-family:'Courier New',monospace;font-size:11pt;color:#cdd6f4;line-height:1.8;">IF NOT(loggedIn)<br>THEN<br>&nbsp;&nbsp;Output "Please log in"<br>ENDIF</div>
+        <div style="margin-top:8px;font-size:12pt;color:#e65100;font-style:italic;">True only when loggedIn is false.</div>
+      </div>
+    </div>
+    <div style="border-left:4px solid #007BA6;background:#e3f2fd;padding:12px 16px;border-radius:0 6px 6px 0;">
+      <strong style="color:#007BA6;">Quick reminder:</strong> AND is stricter — both must be true. OR is more flexible — either one being true is enough. NOT flips a single condition.
+    </div>
+  </div>
+
+  <!-- Activity 7 — word chip FITG -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#9998; Activity 7 — Fill in the gap</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:16px;line-height:1.6;">A student wants to check that a test score is between 0 and 100 (inclusive). They need <em>both</em> conditions to be true at the same time. Which logical operator should they use?<br><br><span style="background:#1e1e2e;color:#cdd6f4;font-family:'Courier New',monospace;padding:6px 14px;border-radius:4px;font-size:13pt;display:inline-block;margin-top:4px;">IF score &gt;= 0 <span style="background:#3d3d5c;padding:2px 10px;border-radius:4px;color:#fab387;">&#9744;</span> score &lt;= 100 THEN</span></div>
+    <div id="opts7w">
+      <span class="wopt" onclick="pickWopt(7,'a',this)">AND</span>
+      <span class="wopt" onclick="pickWopt(7,'b',this)">OR</span>
+      <span class="wopt" onclick="pickWopt(7,'c',this)">NOT</span>
+      <span class="wopt" onclick="pickWopt(7,'d',this)">ELSE</span>
+    </div>
+    <div class="fb" id="fb7"></div>
+  </div>
+
+  <!-- Activity 8 — MCQ: which operator for an OR scenario -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 8 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">A cinema gives a discount if the customer is <strong>under 16</strong> OR <strong>over 60</strong>. What is the output of this algorithm when <strong>age = 14</strong>?</div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:12px 18px;margin-bottom:14px;font-family:'Courier New',monospace;font-size:12.5pt;line-height:1.9;color:#cdd6f4;white-space:pre;"><span style="color:#f38ba8;">IF</span> age <span style="color:#fab387;">&lt; 16</span> <span style="color:#89b4fa;">OR</span> age <span style="color:#fab387;">&gt; 60</span> <span style="color:#f38ba8;">THEN</span>
+    Output <span style="color:#a6e3a1;">"Discount applied"</span>
+<span style="color:#f38ba8;">ELSE</span>
+    Output <span style="color:#a6e3a1;">"Full price"</span>
+<span style="color:#f38ba8;">ENDIF</span></pre>
+    </div>
+    <div id="opts8">
+      <div class="opt" onclick="pickOpt(8,'a',this)">a) "Full price" — because 14 is not greater than 60</div>
+      <div class="opt" onclick="pickOpt(8,'b',this)">b) "Discount applied" — because 14 is less than 16, so the OR condition is true</div>
+      <div class="opt" onclick="pickOpt(8,'c',this)">c) Both outputs are shown — because OR means both branches run</div>
+      <div class="opt" onclick="pickOpt(8,'d',this)">d) Nothing is output — age must satisfy both conditions for anything to happen</div>
+    </div>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <!-- Activity 9 — sort: AND / OR / NOT -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;margin-bottom:18px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#8644; Activity 9 — Sort: AND, OR, or NOT?</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:6px;line-height:1.5;">Drag each scenario into the correct column — which logical operator would be used?</div>
+    <div class="drag-bank" id="sort9-bank">
+      <div class="drag-chip" draggable="true">Check a password is not empty</div>
+      <div class="drag-chip" draggable="true">User must be 18+ AND have a valid ID</div>
+      <div class="drag-chip" draggable="true">Accept red OR blue as a valid colour choice</div>
+      <div class="drag-chip" draggable="true">Alert fires when sensor is NOT triggered</div>
+      <div class="drag-chip" draggable="true">Score is above 0 AND below 100</div>
+      <div class="drag-chip" draggable="true">Logged in as admin OR logged in as teacher</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <div style="font-size:12pt;font-weight:700;color:#007BA6;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;font-family:'Courier New',monospace;">AND</div>
+        <div id="sort9-and" class="sort-zone drag-bank" style="border-color:#007BA6;background:#f0f8ff;min-height:80px;flex-direction:column;"></div>
+      </div>
+      <div>
+        <div style="font-size:12pt;font-weight:700;color:#388e3c;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;font-family:'Courier New',monospace;">OR</div>
+        <div id="sort9-or" class="sort-zone drag-bank" style="border-color:#388e3c;background:#f0f8f0;min-height:80px;flex-direction:column;"></div>
+      </div>
+      <div>
+        <div style="font-size:12pt;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px;text-align:center;font-family:'Courier New',monospace;">NOT</div>
+        <div id="sort9-not" class="sort-zone drag-bank" style="border-color:#e65100;background:#fff8f0;min-height:80px;flex-direction:column;"></div>
+      </div>
+    </div>
+    <button class="check-btn" id="sort9-btn" onclick="checkSort9()">&#10003; Check my sort</button>
+    <div class="drag-result" id="sort9-res"></div>
+  </div>
+
+  <!-- Activity 10 — MCQ: NOT operator -->
+  <div style="background:#fafafa;border:1px solid #d0d0d0;border-radius:6px;padding:18px 22px;">
+    <div style="font-size:11pt;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#00796B;margin-bottom:10px;">&#10003; Activity 10 — Multiple choice</div>
+    <div style="font-size:14pt;font-weight:700;color:#333;margin-bottom:14px;line-height:1.5;">What is the output of this algorithm when <strong>isRaining = False</strong>?</div>
+    <div style="background:#1e1e2e;border-radius:6px;padding:12px 18px;margin-bottom:14px;font-family:'Courier New',monospace;font-size:12.5pt;line-height:1.9;color:#cdd6f4;white-space:pre;"><span style="color:#f38ba8;">IF</span> <span style="color:#89b4fa;">NOT</span>(isRaining) <span style="color:#f38ba8;">THEN</span>
+    Output <span style="color:#a6e3a1;">"Go for a walk!"</span>
+<span style="color:#f38ba8;">ELSE</span>
+    Output <span style="color:#a6e3a1;">"Stay inside."</span>
+<span style="color:#f38ba8;">ENDIF</span></pre>
+    </div>
+    <div id="opts10">
+      <div class="opt" onclick="pickOpt(10,'a',this)">a) "Stay inside." — because isRaining is False, so NOT makes it True and the ELSE runs</div>
+      <div class="opt" onclick="pickOpt(10,'b',this)">b) "Go for a walk!" — because isRaining is False, NOT(False) = True, so the IF branch runs</div>
+      <div class="opt" onclick="pickOpt(10,'c',this)">c) Nothing — NOT always prevents any output</div>
+      <div class="opt" onclick="pickOpt(10,'d',this)">d) Both outputs are shown — NOT runs both branches</div>
+    </div>
+    <div class="fb" id="fb10"></div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div style="background:#007BA6;border-radius:8px;padding:28px 32px;margin-bottom:20px;">
+  <div style="font-size:16pt;font-weight:700;color:#ffffff;margin-bottom:16px;">&#10003; Summary — what you should now know</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>IF statement:</strong> runs a block of steps only when the condition is true. Must end with ENDIF.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>IF…ELSE:</strong> provides two paths — one when the condition is true, one when it is false. Exactly one path always runs.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Operators:</strong> <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">=</code> <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">&lt;&gt;</code> <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">&lt;</code> <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">&gt;</code> <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">&lt;=</code> <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">&gt;=</code> — always compare two values and produce true or false.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>AND:</strong> both conditions must be true. <strong>OR:</strong> at least one must be true. <strong>NOT:</strong> reverses a condition.</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>&gt; vs &gt;=:</strong> use <code style="background:rgba(0,0,0,0.2);padding:1px 6px;border-radius:3px;">&gt;=</code> when the boundary value should be included (e.g. pass is 50 <em>or above</em>).</div>
+    <div style="background:rgba(255,255,255,0.15);border-radius:6px;padding:12px 16px;font-size:13pt;color:#fff;line-height:1.6;"><strong>Common mistake:</strong> forgetting ENDIF, or using AND when OR is needed (or vice versa).</div>
+  </div>
+</div>
+
+</div></div>
+<script>
+// ══════════════════════════════════════════════════
+//  MCQ — pure JS, auto-submits on click, no radio inputs
+// ══════════════════════════════════════════════════
+var mcqChosen = {};
+
+var MCQ_CORRECT = { 2:'c', 6:'b', 8:'b', 10:'b' };
+var MCQ_FB = {
+  2:{
+    ok:'&#10003; Correct! score = 40 does not satisfy score &gt;= 50, so the IF block is skipped entirely. The algorithm then carries on to the next line after ENDIF and outputs "Algorithm complete."',
+    a:'&#10007; The IF condition (score &gt;= 50) is false when score = 40, so the output inside the IF block is skipped. Only the line after ENDIF runs.',
+    b:'&#10007; The first output only runs if score &gt;= 50 — which is false here. The IF block is skipped. Only "Algorithm complete." is output.',
+    d:'&#10007; The line <code>Output "Algorithm complete."</code> is outside the IF block (after ENDIF), so it always runs regardless of the condition. Something is always output.'
+  },
+  6:{
+    ok:'&#10003; Correct! "At least 140 cm" means 140 cm counts as tall enough. <code>&gt;=</code> includes the boundary value of 140, so a rider who is exactly 140 cm is allowed. <code>&gt; 140</code> would wrongly exclude them.',
+    a:'&#10007; <code>&gt; 140</code> means strictly greater than 140. A rider who is exactly 140 cm would be turned away — but the rule says "at least 140" so they should be allowed. Use <code>&gt;=</code>.',
+    c:'&#10007; <code>= 140</code> would only allow riders who are exactly 140 cm — anyone taller would be turned away. The correct operator is <code>&gt;=</code> (at least 140).',
+    d:'&#10007; <code>&lt; 140</code> would allow only riders shorter than 140 cm — the opposite of the rule. The correct operator is <code>&gt;=</code>.'
+  },
+  8:{
+    ok:'&#10003; Correct! With OR, the overall condition is true if <em>either</em> part is true. age = 14 satisfies age &lt; 16 (14 is less than 16), so the condition is true and "Discount applied" is output.',
+    a:'&#10007; With OR, only <em>one</em> condition needs to be true. age = 14 satisfies age &lt; 16, so the overall condition is true and the IF branch runs — not the ELSE branch.',
+    c:'&#10007; Even with OR, only one branch runs — the IF branch if the condition is true, or the ELSE branch if it is false. Both never run at the same time.',
+    d:'&#10007; With OR, only one condition needs to be true for the IF branch to run. age = 14 satisfies age &lt; 16, so the condition is true and "Discount applied" is output.'
+  },
+  10:{
+    ok:'&#10003; Correct! isRaining = False, so NOT(False) = True. The IF condition is therefore true, and the IF branch runs: "Go for a walk!" is output.',
+    a:'&#10007; NOT reverses the value. NOT(False) = True — so the IF condition is true and the IF branch runs, not the ELSE branch. The output is "Go for a walk!"',
+    c:'&#10007; NOT does not prevent output — it simply reverses the condition. NOT(False) = True, so the IF branch runs and outputs "Go for a walk!"',
+    d:'&#10007; IF...ELSE always runs exactly one branch. NOT(False) = True, so the IF condition is true and only the IF branch runs: "Go for a walk!"'
+  }
+};
+
+function pickOpt(qNum, letter, el) {
+  if (mcqChosen[qNum] && mcqChosen[qNum].locked) return;
+  var box = el.parentNode;
+  box.querySelectorAll('.opt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  mcqChosen[qNum] = { letter: letter, locked: false };
+  submitMCQ(qNum, letter);
+}
+
+function submitMCQ(qNum, letter) {
+  if (mcqChosen[qNum] && mcqChosen[qNum].locked) return;
+  var correct = MCQ_CORRECT[qNum];
+  var isOk = (letter === correct);
+  var box = document.getElementById('opts' + qNum);
+  var fb  = document.getElementById('fb' + qNum);
+  if (box) {
+    box.querySelectorAll('.opt').forEach(function(el) {
+      el.classList.add('locked');
+      var m = el.getAttribute('onclick').match(/'([a-d])'/);
+      var v = m ? m[1] : '';
+      if (v === correct) el.classList.add(isOk ? 'correct' : 'reveal');
+      else if (v === letter && !isOk) el.classList.add('wrong');
+    });
+  }
+  if (fb) {
+    fb.style.display = 'block';
+    var fd = MCQ_FB[qNum];
+    fb.className = 'fb ' + (isOk ? 'fb-ok' : 'fb-bad');
+    fb.innerHTML = isOk ? fd.ok : (fd[letter] || '&#10007; Not quite — the correct answer is highlighted in green above.');
+  }
+  if (mcqChosen[qNum]) mcqChosen[qNum].locked = true;
+}
+
+// ══════════════════════════════════════════════════
+//  WORD CHIPS
+// ══════════════════════════════════════════════════
+var woptChosen = {};
+var WOPT_CORRECT = { 7:'a' };
+var WOPT_FB = {
+  7:{
+    ok:'&#10003; Correct! <strong>AND</strong> requires <em>both</em> conditions to be true at the same time. score &gt;= 0 AND score &lt;= 100 ensures the score is between 0 and 100 inclusive — both must hold simultaneously.',
+    b:'&#10007; OR would be true if the score was &gt;= 0 <em>or</em> &lt;= 100, which is almost always true (e.g. -50 would pass because -50 &lt;= 100). You need <strong>AND</strong> to enforce both conditions together.',
+    c:'&#10007; NOT reverses a single condition — it does not combine two conditions. Use <strong>AND</strong> to require that both conditions are true at the same time.',
+    d:'&#10007; ELSE is a keyword in the IF statement structure — it is not a logical operator. Use <strong>AND</strong> to combine two conditions that must both be true.'
+  }
+};
+
+function pickWopt(qNum, letter, el) {
+  if (woptChosen[qNum] && woptChosen[qNum].locked) return;
+  var container = el.parentNode;
+  container.querySelectorAll('.wopt').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  woptChosen[qNum] = { letter: letter, locked: false };
+  var correct = WOPT_CORRECT[qNum];
+  var isOk = (letter === correct);
+  container.querySelectorAll('.wopt').forEach(function(w) {
+    w.classList.add('locked');
+    var m = w.getAttribute('onclick').match(/'([a-d])'/);
+    var v = m ? m[1] : '';
+    if (v === correct) w.classList.add(isOk ? 'correct' : 'reveal');
+    else if (v === letter && !isOk) w.classList.add('wrong');
+  });
+  var fb = document.getElementById('fb' + qNum);
+  if (fb) {
+    fb.style.display = 'block';
+    var fd = WOPT_FB[qNum];
+    fb.className = 'fb ' + (isOk ? 'fb-ok' : 'fb-bad');
+    fb.innerHTML = isOk ? fd.ok : (fd[letter] || '&#10007; Not quite — the correct answer is highlighted above.');
+  }
+  woptChosen[qNum] = { letter: letter, locked: true };
+}
+
+// ══════════════════════════════════════════════════
+//  TRUE / FALSE (Activity 3)
+// ══════════════════════════════════════════════════
+var TF_DATA = {
+  1:{ ans:false,
+      ok:'&#10003; Correct — False! In an IF…ELSE statement, only one branch ever runs. If the condition is true, the IF branch runs; if it is false, the ELSE branch runs. They never both run at the same time.',
+      bad:'&#10007; This is False. An IF…ELSE always runs exactly one branch — either IF or ELSE, never both. Exactly one path is taken each time the algorithm reaches that statement.' },
+  2:{ ans:true,
+      ok:'&#10003; True! ENDIF must close every IF block. Without it, the algorithm is ambiguous — the computer has no way of knowing where the IF statement ends and normal code resumes.',
+      bad:'&#10007; This is True. ENDIF is essential — it marks the end of the IF block. Every IF statement must be closed with ENDIF.' },
+  3:{ ans:true,
+      ok:'&#10003; True! An IF without an ELSE only does something when the condition is true. When the condition is false, the algorithm skips the IF block entirely and continues after ENDIF — doing nothing in response to the condition.',
+      bad:'&#10007; This is True. Without an ELSE branch, when the condition is false the algorithm simply skips the IF block. Nothing happens in response — execution continues after ENDIF.' },
+  4:{ ans:false,
+      ok:'&#10003; Correct — False! The ELSE branch runs when the condition is <em>false</em>, not when it is true. The IF branch runs when the condition is true.',
+      bad:'&#10007; This is False. The ELSE branch runs when the condition is <em>false</em>. The IF branch runs when the condition is true. They are opposites.' }
+};
+
+function doTF(n, userAns, correctAns) {
+  var row = document.getElementById('tf' + n);
+  if (!row || row.classList.contains('done')) return;
+  row.classList.add('done');
+  var isOk = (userAns === correctAns);
+  row.querySelectorAll('.tf-btn').forEach(function(b) {
+    var bT = b.textContent.trim() === 'True';
+    if (bT === userAns) b.className = isOk ? 'tf-btn ok' : 'tf-btn bad';
+    if (!isOk && bT === correctAns) b.className = 'tf-btn show';
+  });
+  var fb = document.createElement('div');
+  fb.style.cssText = 'margin-top:8px;padding:10px 14px;border-radius:6px;font-size:13pt;line-height:1.6;font-family:Lato,sans-serif;';
+  fb.style.background = isOk ? '#e8f5e9' : '#ffebee';
+  fb.style.color      = isOk ? '#1b5e20' : '#7f0000';
+  fb.style.border     = isOk ? '1px solid #81c784' : '1px solid #ef9a9a';
+  fb.innerHTML = isOk ? TF_DATA[n].ok : TF_DATA[n].bad;
+  row.appendChild(fb);
+}
+
+// ══════════════════════════════════════════════════
+//  MATCH — Activity 1 (IF keywords)
+// ══════════════════════════════════════════════════
+function checkMatch1() {
+  var rows = document.querySelectorAll('#match1 .match-row');
+  var allOk = true;
+  rows.forEach(function(row) {
+    row.classList.remove('ok', 'bad');
+    var sel = row.querySelector('.match-sel');
+    if (sel.value === sel.getAttribute('data-ans')) { row.classList.add('ok'); }
+    else { row.classList.add('bad'); allOk = false; }
+  });
+  var res = document.getElementById('match1-res');
+  res.style.display = 'block';
+  if (allOk) {
+    res.className = 'match-result fb fb-ok';
+    res.innerHTML = '&#10003; All four correct! IF = starts the decision &bull; THEN = marks the true branch &bull; ENDIF = closes the block &bull; the condition = what is being tested. These four parts are the skeleton of every IF statement.';
+    document.getElementById('match1-btn').disabled = true;
+    document.querySelectorAll('#match1 .match-sel').forEach(function(s){ s.disabled = true; });
+  } else {
+    res.className = 'match-result fb fb-bad';
+    res.innerHTML = '&#10007; One or more are wrong — check those highlighted in red. Hint: IF comes first; THEN follows the condition; ENDIF closes the block; the condition is the test itself (e.g. score &gt;= 50).';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  MATCH — Activity 5 (comparison operators)
+// ══════════════════════════════════════════════════
+function checkMatch2() {
+  var rows = document.querySelectorAll('#match2 .match-row');
+  var allOk = true;
+  rows.forEach(function(row) {
+    row.classList.remove('ok', 'bad');
+    var sel = row.querySelector('.match-sel');
+    if (sel.value === sel.getAttribute('data-ans')) { row.classList.add('ok'); }
+    else { row.classList.add('bad'); allOk = false; }
+  });
+  var res = document.getElementById('match2-res');
+  res.style.display = 'block';
+  if (allOk) {
+    res.className = 'match-result fb fb-ok';
+    res.innerHTML = '&#10003; All four correct! &lt;&gt; = not equal to &bull; &gt;= = greater than or equal to &bull; &lt; = less than &bull; &lt;= = less than or equal to. These operators are used in every IF condition you will ever write.';
+    document.getElementById('match2-btn').disabled = true;
+    document.querySelectorAll('#match2 .match-sel').forEach(function(s){ s.disabled = true; });
+  } else {
+    res.className = 'match-result fb fb-bad';
+    res.innerHTML = '&#10007; One or more are wrong — check those highlighted in red. Remember: &lt;&gt; means NOT equal (two symbols together); &gt;= includes the boundary value; &lt; is strictly less than.';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  DRAG & DROP ENGINE
+// ══════════════════════════════════════════════════
+var _drag = null;
+document.addEventListener('dragstart', function(e) {
+  var t = e.target;
+  if (t.classList.contains('drag-chip') && !t.classList.contains('locked')) {
+    _drag = t;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', t.textContent);
+  }
+});
+document.addEventListener('dragover', function(e) {
+  var t = e.target;
+  while (t && t !== document.body) {
+    if (t.classList.contains('drop-zone') || t.classList.contains('drag-bank') || t.classList.contains('sort-zone')) {
+      e.preventDefault();
+      t.classList.add('drag-over');
+      return;
+    }
+    t = t.parentNode;
+  }
+});
+document.addEventListener('dragleave', function(e) {
+  var t = e.target;
+  if (t && t.classList) t.classList.remove('drag-over');
+});
+document.addEventListener('drop', function(e) {
+  e.preventDefault();
+  if (!_drag) return;
+  var tgt = e.target;
+  while (tgt && tgt !== document.body) {
+    if (tgt.classList.contains('drop-zone') || tgt.classList.contains('drag-bank') || tgt.classList.contains('sort-zone')) break;
+    tgt = tgt.parentNode;
+  }
+  if (!tgt || tgt === document.body) return;
+  tgt.classList.remove('drag-over');
+  if (tgt.classList.contains('drop-zone')) {
+    var displaced = tgt.querySelector('.drag-chip');
+    if (displaced) {
+      var originId = displaced.getAttribute('data-origin') || '';
+      var origin = originId ? document.getElementById(originId) : _drag.parentNode;
+      if (origin) origin.appendChild(displaced);
+      displaced.removeAttribute('data-origin');
+    }
+    _drag.setAttribute('data-origin', _drag.parentNode.id || '');
+    _drag.parentNode.removeChild(_drag);
+    tgt.appendChild(_drag);
+  } else {
+    if (tgt === _drag.parentNode) { _drag = null; return; }
+    _drag.removeAttribute('data-origin');
+    _drag.parentNode.removeChild(_drag);
+    tgt.appendChild(_drag);
+  }
+  _drag = null;
+});
+
+function getDZText(id) {
+  var z = document.getElementById(id);
+  var c = z ? z.querySelector('.drag-chip') : null;
+  return c ? c.textContent.trim() : '';
+}
+function getSortItems(id) {
+  var z = document.getElementById(id);
+  if (!z) return [];
+  return Array.from(z.querySelectorAll('.drag-chip')).map(function(c){ return c.textContent.trim(); });
+}
+
+// ══════════════════════════════════════════════════
+//  ACTIVITY 4 — drag keywords into IF ELSE gaps
+// ══════════════════════════════════════════════════
+var act4done = false;
+function checkAct4() {
+  if (act4done) return;
+  var a = getDZText('dz4a');
+  var b = getDZText('dz4b');
+  var c = getDZText('dz4c');
+  var res = document.getElementById('act4-res');
+  res.style.display = 'block';
+  if (!a || !b || !c) {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; Drag a keyword into every gap before checking.';
+    return;
+  }
+  var okA = (a === 'IF');
+  var okB = (b === 'THEN');
+  var okC = (c === 'ELSE');
+  if (okA && okB && okC) {
+    act4done = true;
+    res.className = 'drag-result fb fb-ok';
+    res.innerHTML = '&#10003; <strong>All correct!</strong> The structure is: <strong>IF</strong> condition <strong>THEN</strong> ... <strong>ELSE</strong> ... ENDIF. IF starts the block, THEN marks the true branch, ELSE marks the false branch, and ENDIF closes the whole statement.';
+    document.getElementById('act4-btn').disabled = true;
+    document.querySelectorAll('#bank4 .drag-chip').forEach(function(c){ c.classList.add('locked'); });
+    ['dz4a','dz4b','dz4c'].forEach(function(id){
+      var chip = document.getElementById(id).querySelector('.drag-chip');
+      if (chip) chip.classList.add('locked');
+    });
+  } else {
+    var hints = [];
+    if (!okA) hints.push('Gap 1 should be <strong>IF</strong> — it starts the decision block');
+    if (!okB) hints.push('Gap 2 should be <strong>THEN</strong> — it follows the condition and marks what to do when true');
+    if (!okC) hints.push('Gap 3 should be <strong>ELSE</strong> — it marks the path taken when the condition is false');
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; Not quite. ' + hints.join('; ') + '.';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  ACTIVITY 9 — sort AND / OR / NOT
+// ══════════════════════════════════════════════════
+var sort9done = false;
+var AND_ITEMS = [
+  'User must be 18+ AND have a valid ID',
+  'Score is above 0 AND below 100'
+];
+var OR_ITEMS = [
+  'Accept red OR blue as a valid colour choice',
+  'Logged in as admin OR logged in as teacher'
+];
+var NOT_ITEMS = [
+  'Check a password is not empty',
+  'Alert fires when sensor is NOT triggered'
+];
+
+function checkSort9() {
+  if (sort9done) return;
+  var andItems = getSortItems('sort9-and');
+  var orItems  = getSortItems('sort9-or');
+  var notItems = getSortItems('sort9-not');
+  var res = document.getElementById('sort9-res');
+  res.style.display = 'block';
+  if (andItems.length + orItems.length + notItems.length < 6) {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; Drag all 6 chips into a column before checking.';
+    return;
+  }
+  var wrong = [];
+  andItems.forEach(function(v) {
+    if (OR_ITEMS.indexOf(v)  !== -1) wrong.push('\u201c' + v + '\u201d belongs in <strong>OR</strong>.');
+    if (NOT_ITEMS.indexOf(v) !== -1) wrong.push('\u201c' + v + '\u201d belongs in <strong>NOT</strong>.');
+  });
+  orItems.forEach(function(v) {
+    if (AND_ITEMS.indexOf(v) !== -1) wrong.push('\u201c' + v + '\u201d belongs in <strong>AND</strong>.');
+    if (NOT_ITEMS.indexOf(v) !== -1) wrong.push('\u201c' + v + '\u201d belongs in <strong>NOT</strong>.');
+  });
+  notItems.forEach(function(v) {
+    if (AND_ITEMS.indexOf(v) !== -1) wrong.push('\u201c' + v + '\u201d belongs in <strong>AND</strong>.');
+    if (OR_ITEMS.indexOf(v)  !== -1) wrong.push('\u201c' + v + '\u201d belongs in <strong>OR</strong>.');
+  });
+  if (wrong.length === 0) {
+    sort9done = true;
+    document.getElementById('sort9-btn').disabled = true;
+    res.className = 'drag-result fb fb-ok';
+    res.innerHTML = '&#10003; <strong>All correct!</strong> AND = both conditions must be true (18+ AND valid ID) &bull; OR = either one is enough (red OR blue) &bull; NOT = reverses the condition (NOT empty, NOT triggered).';
+  } else {
+    res.className = 'drag-result fb fb-bad';
+    res.innerHTML = '&#10007; ' + wrong.slice(0, 2).join(' ') + ' Hint: AND needs <em>both</em> to be true; OR needs <em>at least one</em> to be true; NOT <em>reverses</em> a single condition.';
+  }
+}
+</script>
+</body>
+</html>
